@@ -1,27 +1,28 @@
 const express = require('express');
-const path = require('path');
 const app = express();
+const path = require('path');
+const morgan = require('morgan');
+
 require('dotenv').config();
 
+const userRoutes = require('./routes/userRoutes');
+
+// const logger = require('./middlewares/logger');
+
 const clock = require('./middlewares/time');
+const { urlencoded } = require('express');
 
 const port = process.env.PORT || 3000;
 
+// app.use(logger);
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(urlencoded({extended: false}))
 app.use(clock);
 
 // app.use(express.static(path.join(__dirname, 'public')));
 
-let users = [
-    { id: '1', name: 'jd', email: 'jd@me.com', password: '123' },
-    { id: '2', name: 'paul', email: 'paul@me.com', password: '123' },
-    { id: '3', name: 'lois', email: 'lois@me.com', password: '123' },
-    { id: '4', name: 'sidney', email: 'sidney@me.com', password: '123' },
-    { id: '5', name: 'canton', email: 'canton@me.com', password: '123' },
-];
-
-app.get('/', (req, res) => {
-    res.status(200).json({confirmation: 'success', users});
-});
+app.use('/api/v1/users', userRoutes);
 
 app.listen(port, () => {
     console.log(`Listening on ${port}`);
